@@ -55,18 +55,6 @@ declare namespace API {
     id?: number
   }
 
-  type listUserVOByPageUsingGETParams = {
-    current?: number
-    id?: number
-    pageSize?: number
-    sortField?: string
-    sortOrder?: string
-    userAccount?: string
-    userName?: string
-    userProfile?: string
-    userRole?: string
-  }
-
   type LoginUserVO = {
     createTime?: string
     id?: number
@@ -111,6 +99,18 @@ declare namespace API {
   type UserLoginRequest = {
     userAccount?: string
     userPassword?: string
+  }
+
+  type UserQueryRequest = {
+    current?: number
+    id?: number
+    pageSize?: number
+    sortField?: string
+    sortOrder?: string
+    userAccount?: string
+    userName?: string
+    userProfile?: string
+    userRole?: string
   }
 
   type UserRegisterRequest = {
