@@ -6,6 +6,10 @@ import BasicLayout from '@/layouts/BasicLayout.vue'
 import HomePage from '@/pages/HomePage.vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import UserInfoPage from '@/pages/user/UserInfoPage.vue'
+import AddPicturePage from '@/pages/picture/AddPicturePage.vue'
+import PictureManagePage from '@/pages/admin/PictureManagePage.vue'
+import PictureDetailPage from '@/pages/admin/PictureDetailPage.vue'
+import EditPicturePage from '@/pages/picture/EditPicturePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,10 +41,31 @@ const router = createRouter({
           component: UserManagePage
         },
         {
+          path: '/admin/pictureManage',
+          name: '图片管理',
+          component: PictureManagePage,
+        },
+        {
           path: '/user/info',
           name: '个人信息',
           component: UserInfoPage
-        }
+        },
+        {
+          path: '/picture/add_picture',
+          name: '创建图片',
+          component: AddPicturePage,
+        },
+        {
+          path: '/picture/detail/:id',
+          name: '图片详情',
+          component: PictureDetailPage,
+          props: true,
+        },
+        {
+          path: '/picture/edit_picture',
+          name: '修改图片',
+          component: EditPicturePage,
+        },
       ]
     },
     {

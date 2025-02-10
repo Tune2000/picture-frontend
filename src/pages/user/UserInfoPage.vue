@@ -177,7 +177,7 @@ const handleUpload = async (options: any) => {
     const res = await uploadAvatarUsingPost({},file);
     const data = res.data as any;
     if (data.code === 0) {
-      editFormInfo.userAvatar = "/api" + data.data.avatarUrl;
+      editFormInfo.userAvatar = data.data.avatarUrl;
       message.success('头像上传成功');
     } else {
       message.error('头像上传失败');
