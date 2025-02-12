@@ -3,7 +3,20 @@
     <h2 style="margin-bottom: 16px">
       修改图片
     </h2>
-    <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="文件上传">
+        <!-- 图片上传组件 -->
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL 上传" force-render>
+        <!-- URL 图片上传组件 -->
+        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess">
+          <!-- 使用具名插槽插入动态文字 -->
+          <template #picture-text>当前图片：</template>
+        </UrlPictureUpload>
+      </a-tab-pane>
+    </a-tabs>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -48,10 +61,13 @@ import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { editPictureUsingPost, getPictureVoByIdUsingGet, listPictureTagCategoryUsingGet } from '@/api/pictureController'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 
 // 父组件通过子组件调用回调函数方式传递数据
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
+const uploadType = ref<'file' | 'url'>('file')
+
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
@@ -73,13 +89,13 @@ const handleSubmit = async (values: any) => {
     ...values,
   })
   if (res.data.code === 0 && res.data.data) {
-    message.success('创建成功')
+    message.success('修改成功')
     // 跳转到图片详情页
     await router.push({
       path: `/picture/detail/${pictureId}`,
     })
   } else {
-    message.error('创建失败，' + res.data.message)
+    message.error('修改失败，' + res.data.message)
   }
 }
 
