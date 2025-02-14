@@ -1,22 +1,9 @@
 <template>
   <div id="editPicturePage">
-    <h2 style="margin-bottom: 16px">
-      修改图片
+    <h2 class="title">
+      修改图片信息
     </h2>
-    <!-- 选择上传方式 -->
-    <a-tabs v-model:activeKey="uploadType">
-      <a-tab-pane key="file" tab="文件上传">
-        <!-- 图片上传组件 -->
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
-      </a-tab-pane>
-      <a-tab-pane key="url" tab="URL 上传" force-render>
-        <!-- URL 图片上传组件 -->
-        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess">
-          <!-- 使用具名插槽插入动态文字 -->
-          <template #picture-text>当前图片：</template>
-        </UrlPictureUpload>
-      </a-tab-pane>
-    </a-tabs>
+    <img :src="picture.url" class="editImg" alt="avatar"/>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -56,22 +43,13 @@
 </template>
 
 <script setup lang="ts">
-import PictureUpload from '@/components/PictureUpload.vue'
 import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { editPictureUsingPost, getPictureVoByIdUsingGet, listPictureTagCategoryUsingGet } from '@/api/pictureController'
-import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 
-// 父组件通过子组件调用回调函数方式传递数据
-const picture = ref<API.PictureVO>()
+const picture = ref<API.PictureVO>({})
 const pictureForm = reactive<API.PictureEditRequest>({})
-const uploadType = ref<'file' | 'url'>('file')
-
-const onSuccess = (newPicture: API.PictureVO) => {
-  picture.value = newPicture
-  pictureForm.name = newPicture.name
-}
 
 const router = useRouter()
 /**
@@ -83,7 +61,7 @@ const handleSubmit = async (values: any) => {
   if (!pictureId) {
     return
   }
-  // 表单提交前执行了两步：1.子组件上传图片后返回父组件图片数据 2.补充修改其他默认数据
+  // 修改图片相关信息
   const res = await editPictureUsingPost({
     id: pictureId,
     ...values,
@@ -130,7 +108,7 @@ onMounted(() => {
 })
 
 const route = useRoute()
-// 获取老数据
+// 获取数据
 const getOldPicture = async () => {
   // 获取到 id
   const id = route.query?.id as any
@@ -143,6 +121,8 @@ const getOldPicture = async () => {
       pictureForm.introduction = data.introduction
       pictureForm.category = data.category
       pictureForm.tags = data.tags
+    } else {
+      message.error('获取图片失败，' + res.data.message);
     }
   }
 }
@@ -156,5 +136,24 @@ onMounted(() => {
 #editPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+
+.title {
+  margin: 0 auto 16px;
+  padding: 10px 15px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  font-weight: 200;
+  color: #24292e;
+  background-color: #f6f8fa;
+  border: 1px solid #eaecef;
+  border-radius: 6px;
+}
+
+.editImg {
+  max-width: 100%;
+  max-height: 250px;
+  margin: 0 auto;
+  display: block;
 }
 </style>

@@ -29,7 +29,7 @@
     </div>
     <!-- 图片列表 -->
     <a-list
-      :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 5 }"
+      :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 6 }"
       :data-source="dataList"
       :pagination="pagination"
       :loading="loading"
@@ -42,7 +42,7 @@
               <img
                 style="height: 160px; object-fit: cover"
                 :alt="picture.name"
-                :src="picture.url"
+                :src="picture.thumbnailUrl ?? picture.url"
               />
             </template>
             <a-card-meta :title="picture.name">
@@ -68,7 +68,10 @@
 // 数据
 import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
-import { listPictureTagCategoryUsingGet, listPictureVoByPageUsingPost } from '@/api/pictureController'
+import {
+  listPictureTagCategoryUsingGet,
+  listPictureVoByPageWithCacheUsingPost
+} from '@/api/pictureController'
 import { useRouter } from 'vue-router'
 
 const dataList = ref([])
@@ -137,7 +140,7 @@ const fetchData = async () => {
     }
   })
 
-  const res = await listPictureVoByPageUsingPost(params)
+  const res = await listPictureVoByPageWithCacheUsingPost(params)
   console.log(res.data)
   if (res.data.data) {
     dataList.value = res.data.data.records ?? [] as any
