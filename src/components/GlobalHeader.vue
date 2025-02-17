@@ -1,6 +1,6 @@
 <template id="globalHeader">
   <a-row :wrap="false">
-    <a-col flex="200px" :offset="1">
+    <a-col flex="200px" >
       <RouterLink to="/">
         <div class="title-bar">
           <img class="logo" src="../assets/logo.png" alt="logo" />
@@ -114,9 +114,14 @@ const originItems = [
     title: '图片管理',
   },
   {
+    key: '/admin/spaceManage',
+    label: '空间管理',
+    title: '空间管理',
+  },
+  {
     key: '/picture/add_picture',
-    label: '创建图片',
-    title: '创建图片',
+    label: '上传图片',
+    title: '上传图片',
   }
 ]
 // 过滤菜单项

@@ -25,6 +25,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue';
 
 interface Props {
   picture?: API.PictureVO
+  spaceId?: any
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -49,11 +50,12 @@ const loading = ref<boolean>(false)
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   try {
-    const params = props.picture ? { id: props.picture.id } : {}
+    const params: API.PictureUploadRequest = props.picture ? { id: props.picture.id } : {}
+    params.spaceId = props.spaceId;
     const res = await uploadPictureUsingPost(params, {}, file)
     const data = res.data as any
     if (data.code === 0 && data.data) {
-      message.success('图片上传成功')
+      message.success('图片上传完成，请在下方填写完整信息后提交')
       console.log(data)
       // 将上传成功的图片信息传递给父组件
       props.onSuccess?.(data.data)

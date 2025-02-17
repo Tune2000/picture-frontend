@@ -15,6 +15,7 @@ import { message } from 'ant-design-vue'
 
 interface Props {
   picture?: API.PictureVO
+  spaceId?: any
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -28,6 +29,7 @@ const handleUpload = async () => {
   loading.value = true
   try {
     const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }
+    params.spaceId = props.spaceId;
     if (props.picture) {
       params.id = props.picture.id
     }

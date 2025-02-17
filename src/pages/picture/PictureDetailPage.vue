@@ -156,7 +156,7 @@ const doDelete = async () => {
 
 <style scoped>
 .detail-box {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
 }
 </style>

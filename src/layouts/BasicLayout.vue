@@ -4,9 +4,12 @@
       <a-layout-header class="header">
         <GlobalHeader></GlobalHeader>
       </a-layout-header>
-      <a-layout-content class="content">
-        <router-view />
-      </a-layout-content>
+      <a-layout>
+        <GlobalSider class="sider" />
+        <a-layout-content class="content">
+          <router-view />
+        </a-layout-content>
+      </a-layout>
       <a-layout-footer class="footer">
         <a href="http://baidu.com" target="_blank">智能协作云图库平台</a>
       </a-layout-footer>
@@ -16,6 +19,7 @@
 
 <script setup lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
+import GlobalSider from '@/components/GlobalSider.vue'
 </script>
 
 <style scoped>
@@ -28,8 +32,17 @@ import GlobalHeader from '@/components/GlobalHeader.vue'
 }
 #basicLayout .content{
   margin-bottom: 28px;
-  padding: 20px;
+  padding: 28px;
   background: linear-gradient(to bottom, #fff, #ebeced);
+}
+#basicLayout .sider {
+  background: #fff;
+  border-right: 0.5px solid #eee;
+  padding-top: 20px;
+}
+#basicLayout :deep(.ant-menu-root) {
+  border-bottom: none !important;
+  border-inline-end: none !important;
 }
 #basicLayout .footer{
   position: fixed;

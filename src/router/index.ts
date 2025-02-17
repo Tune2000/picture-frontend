@@ -8,9 +8,14 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import UserInfoPage from '@/pages/user/UserInfoPage.vue'
 import AddPicturePage from '@/pages/picture/AddPicturePage.vue'
 import PictureManagePage from '@/pages/admin/PictureManagePage.vue'
-import PictureDetailPage from '@/pages/admin/PictureDetailPage.vue'
+import PictureDetailPage from '@/pages/picture/PictureDetailPage.vue'
 import EditPicturePage from '@/pages/picture/EditPicturePage.vue'
 import AddPictureBatchPage from '@/pages/picture/AddPictureBatchPage.vue'
+import SpaceManagePage from '@/pages/admin/SpaceManagePage.vue'
+import AddSpacePage from '@/pages/space/AddSpacePage.vue'
+import MySpacePage from '@/pages/space/MySpacePage.vue'
+import SpaceDetailPage from '@/pages/space/SpaceDetailPage.vue'
+import EditSpacePage from '@/pages/space/EditSpacePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +52,11 @@ const router = createRouter({
           component: PictureManagePage,
         },
         {
+          path: '/admin/spaceManage',
+          name: '空间管理',
+          component: SpaceManagePage,
+        },
+        {
           path: '/user/info',
           name: '个人信息',
           component: UserInfoPage
@@ -71,6 +81,27 @@ const router = createRouter({
           path: '/picture/edit_picture',
           name: '修改图片',
           component: EditPicturePage,
+        },
+        {
+          path: '/space/add_space',
+          name: '创建空间',
+          component: AddSpacePage,
+        },
+        {
+          path: '/space/edit_space',
+          name: '修改空间',
+          component: EditSpacePage,
+        },
+        {
+          path: '/my_space',
+          name: '我的空间',
+          component: MySpacePage,
+        },
+        {
+          path: '/space/detail/:id',
+          name: '空间详情',
+          component: SpaceDetailPage,
+          props: true,
         },
       ]
     },

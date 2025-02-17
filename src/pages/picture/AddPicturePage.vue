@@ -1,17 +1,23 @@
 <template>
   <div id="addPicturePage">
     <h2 style="margin-bottom: 16px">
-      创建图片
+      上传图片
     </h2>
+    <a-typography-paragraph v-if="spaceId" type="secondary">
+      保存至私人空间：<a :href="`/space/detail/${spaceId}`" target="_self">{{ spaceName }}</a>
+    </a-typography-paragraph>
+    <a-typography-paragraph v-else type="secondary">
+      上传至公共图库（需要管理员审核）
+    </a-typography-paragraph>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType">
       <a-tab-pane key="file" tab="文件上传">
         <!-- 图片上传组件 -->
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <PictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
         <!-- URL 图片上传组件 -->
-        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
@@ -42,7 +48,7 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">创建</a-button>
+        <a-button type="primary" html-type="submit" style="width: 100%">提交</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -52,10 +58,11 @@
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { editPictureUsingPost, getPictureVoByIdUsingGet, listPictureTagCategoryUsingGet } from '@/api/pictureController'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 
 // 父组件通过子组件调用回调函数方式传递数据
 const picture = ref<API.PictureVO>()
@@ -68,6 +75,14 @@ const onSuccess = (newPicture: API.PictureVO) => {
 }
 
 const router = useRouter()
+const route = useRoute()
+
+// 空间 id
+// 有空间 id 说明是上传至私人空间
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
+
 /**
  * 提交表单
  * @param values
@@ -80,6 +95,7 @@ const handleSubmit = async (values: any) => {
   // 表单提交前执行了两步：1.子组件上传图片后返回父组件图片数据 2.补充修改其他默认数据
   const res = await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values,
   })
   if (res.data.code === 0 && res.data.data) {
@@ -119,11 +135,22 @@ const getTagCategoryOptions = async () => {
   }
 }
 
+// 获取空间名称
+const spaceName = ref<string>()
+const getSpaceName = async () => {
+  const res = await getSpaceVoByIdUsingGet({
+    id: route.query?.spaceId as any
+  })
+  if (res.data.code === 0 && res.data.data) {
+    spaceName.value = res.data.data.spaceName
+  }
+}
+
 onMounted(() => {
   getTagCategoryOptions()
+  getSpaceName()
 })
 
-const route = useRoute()
 // 获取老数据
 const getOldPicture = async () => {
   // 获取到 id
