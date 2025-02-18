@@ -265,7 +265,6 @@ const tagList = ref<string[]>([])
 
 const getTagCategoryOptions  = async () => {
   const res = await listPictureTagCategoryUsingGet()
-  console.log(res)
   if (res.data.code === 0 && res.data.data) {
     categoryList.value = res.data.data.categoryList ?? []
     tagList.value = res.data.data.tagList ?? []

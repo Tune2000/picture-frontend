@@ -82,7 +82,6 @@ const selectedTagList = ref<string[]>([])
 
 const getTagCategoryOptions  = async () => {
   const res = await listPictureTagCategoryUsingGet()
-  console.log(res)
   if (res.data.code === 0 && res.data.data) {
     categoryList.value = res.data.data.categoryList ?? []
     tagList.value = res.data.data.tagList ?? []
@@ -110,7 +109,6 @@ const fetchData = async () => {
   // 空间模块功能调试，主页图片数据缓存调用接口暂不使用
   // const res = await listPictureVoByPageWithCacheUsingPost(params)
   const res = await listPictureVoByPageUsingPost(params)
-  console.log(res.data)
   if (res.data.data) {
     dataList.value = res.data.data.records ?? [] as any
     total.value = Number(res.data.data.total) ?? 0

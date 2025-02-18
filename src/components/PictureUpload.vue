@@ -56,7 +56,6 @@ const handleUpload = async ({ file }: any) => {
     const data = res.data as any
     if (data.code === 0 && data.data) {
       message.success('图片上传完成，请在下方填写完整信息后提交')
-      console.log(data)
       // 将上传成功的图片信息传递给父组件
       props.onSuccess?.(data.data)
     } else {

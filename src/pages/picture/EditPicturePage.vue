@@ -82,7 +82,6 @@ const tagOptions = ref<string[]>([])
 
 const getTagCategoryOptions = async () => {
   const res = await listPictureTagCategoryUsingGet()
-  console.log(res.data)
   if (res.data.code === 0 && res.data.data) {
     // 转换成下拉选项组件接受的格式
     // a-select 或 a-auto-complete 等下拉选择组件时，它们需要接收一个数组作为选项，该数组中的元素通常是对象，且每个对象包含 value 和 label 属性

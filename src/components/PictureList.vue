@@ -30,20 +30,16 @@
               </template>
             </a-card-meta>
             <template v-if="showOp" #actions>
-              <a-space @click="(e : any) => doEdit(picture, e)">
-                <EditOutlined />
-                编辑
-              </a-space>
-              <a-space @click="(e : any) => showDeleteConfirm(picture, e)">
-                <DeleteOutlined />
-                删除
-              </a-space>
+              <ShareAltOutlined @click="(e) => doShare(picture, e)" />
+              <!--<SearchOutlined @click="(e) => doSearch(picture, e)" />-->
+              <EditOutlined @click="(e) => doEdit(picture, e)" />
+              <DeleteOutlined @click="(e) => showDeleteConfirm(picture, e)" />
             </template>
           </a-card>
         </a-list-item>
       </template>
     </a-list>
-
+    <ShareModal ref="shareModalRef" :link="shareLink" />
     <!--删除-->
     <a-modal v-model:open="deleteVisible" title="用户删除" ok-text="确认" cancel-text="取消" @ok="doDelete">
       <p>是否确认删除？</p>
@@ -52,30 +48,38 @@
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  ShareAltOutlined
+} from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { ref } from 'vue'
+import ShareModal from '@/components/ShareModel.vue'
+
 interface Props {
   dataList?: API.PictureVO[]
   loading?: boolean
   showOp?: boolean
   onReload?: () => void
 }
+
 const props = withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
-  showOp: false,
+  showOp: false
 })
 const router = useRouter()
 // 跳转至图片详情页
 const doClickPicture = (picture: API.PictureVO) => {
   router.push({
-    path: `/picture/detail/${picture.id}`,
+    path: `/picture/detail/${picture.id}`
   })
 }
 // 编辑
-const doEdit = (picture: API.PictureVO , e: MouseEvent) => {
+const doEdit = (picture: API.PictureVO, e: MouseEvent) => {
   // 阻止冒泡，避免同时触发卡片点击事件
   e.stopPropagation()
   // 跳转时一定要携带 spaceId
@@ -83,15 +87,15 @@ const doEdit = (picture: API.PictureVO , e: MouseEvent) => {
     path: '/picture/edit_picture',
     query: {
       id: picture.id,
-      spaceId: picture.spaceId,
-    },
+      spaceId: picture.spaceId
+    }
   })
 }
 
 // 删除数据弹出框
 const deleteVisible = ref(false)
 const deleteInfo = ref()
-const showDeleteConfirm = (picture: API.PictureVO , e: MouseEvent) => {
+const showDeleteConfirm = (picture: API.PictureVO, e: MouseEvent) => {
   // 阻止冒泡，避免同时触发卡片点击事件
   e.stopPropagation()
   deleteVisible.value = true
@@ -101,14 +105,27 @@ const showDeleteConfirm = (picture: API.PictureVO , e: MouseEvent) => {
 // 删除数据
 const doDelete = async () => {
   deleteVisible.value = false
-  console.log(deleteInfo.value)
-  const res = await deletePictureUsingPost({ id: deleteInfo.value})
+  const res = await deletePictureUsingPost({ id: deleteInfo.value })
   if (res.data.code === 0) {
     message.success('删除成功')
     props.onReload?.()
     deleteInfo.value = ''
   } else {
     message.error('删除失败')
+  }
+}
+
+// ----- 分享操作 ----
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+// 分享
+const doShare = (picture: API.PictureVO, e: MouseEvent) => {
+  // 阻止冒泡
+  e.stopPropagation()
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${picture.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
   }
 }
 </script>

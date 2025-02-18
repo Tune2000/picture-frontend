@@ -108,7 +108,6 @@ const editFormInfo = reactive({...userInfo });
 const fetchUserInfo = async () => {
   try {
     const res = await getLoginUserInfoVoByIdUsingGet({ id: id.value as any });
-    console.log(res)
     if (res.data.data) {
       const { userName, userAvatar, userProfile, gender, phone, email } = res.data.data;
       userInfo.userName = userName as string;

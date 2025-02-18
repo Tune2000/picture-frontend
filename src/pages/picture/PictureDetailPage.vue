@@ -49,6 +49,19 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    width: '16px',
+                    height: '16px',
+                    backgroundColor: toHexColor(picture.picColor),
+                  }"
+                />
+              </a-space>
+            </a-descriptions-item>
           </a-descriptions>
           <a-space wrap>
             <a-button type="primary" @click="doDownload">
@@ -57,7 +70,9 @@
                 <DownloadOutlined />
               </template>
             </a-button>
-
+            <a-button :icon="h(ShareAltOutlined)" type="primary" ghost @click="doShare">
+              分享
+            </a-button>
             <a-button v-if="canEdit" type="default" @click="doEdit">
               编辑
               <template #icon>
@@ -75,15 +90,17 @@
         </a-card>
       </a-col>
     </a-row>
+    <ShareModal ref="shareModalRef" :link="shareLink" :title="title"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { h, computed, onMounted, ref } from 'vue'
 import { deletePictureUsingPost, getPictureVoByIdUsingGet } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons-vue'
-import { downloadImage, formatSize } from '@/utils'
+import { DeleteOutlined, DownloadOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
+import ShareModal from '@/components/ShareModel.vue'
+import { downloadImage, formatSize, toHexColor } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import router from '@/router'
 
@@ -144,19 +161,33 @@ const doDelete = async () => {
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
-    router.push('/welcome')
+    await router.push('/welcome')
   } else {
     message.error('删除失败')
   }
 }
 
+// ----- 分享操作 ----
+const shareModalRef = ref()
+// 分享标题
+const title = ref<string>()
 
+// 分享链接
+const shareLink = ref<string>()
+// 分享
+const doShare = () => {
+  title.value = "分享图片"
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
 
 </script>
 
 <style scoped>
 .detail-box {
-  width: 90%;
+  width: 80%;
   margin: 0 auto;
 }
 </style>
