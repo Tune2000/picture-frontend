@@ -20,6 +20,28 @@
         <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+    <!-- 图片编辑 -->
+    <div v-if="picture" class="edit-bar">
+      <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+        <a-button type="primary" :icon="h(FullscreenOutlined)" @click="doImagePainting">
+          AI 扩图
+        </a-button>
+      </a-space>
+        <ImageCropper
+          ref="imageCropperRef"
+          :imageUrl="picture?.url"
+          :picture="picture"
+          :spaceId="spaceId"
+          :onSuccess="onCropSuccess"
+        />
+        <ImageOutPainting
+          ref="imageOutPaintingRef"
+          :picture="picture"
+          :spaceId="spaceId"
+          :onSuccess="onImageOutPaintingSuccess"
+        />
+    </div>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -58,11 +80,14 @@
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { h, computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { editPictureUsingPost, getPictureVoByIdUsingGet, listPictureTagCategoryUsingGet } from '@/api/pictureController'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
+import { EditOutlined, FullscreenOutlined  } from '@ant-design/icons-vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 // 父组件通过子组件调用回调函数方式传递数据
 const picture = ref<API.PictureVO>()
@@ -99,13 +124,13 @@ const handleSubmit = async (values: any) => {
     ...values,
   })
   if (res.data.code === 0 && res.data.data) {
-    message.success('创建成功')
+    message.success('提交成功')
     // 跳转到图片详情页
     await router.push({
       path: `/picture/detail/${pictureId}`,
     })
   } else {
-    message.error('创建失败，' + res.data.message)
+    message.error('提交失败，' + res.data.message)
   }
 }
 
@@ -170,11 +195,37 @@ onMounted(() => {
   getOldPicture()
 })
 
+// ----- 图片编辑器引用 ------
+const imageCropperRef = ref()
+// 编辑图片
+const doEditPicture = async () => {
+  imageCropperRef.value?.openModal()
+}
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+// ----- AI 扩图引用 -----
+const imageOutPaintingRef = ref()
+// 打开 AI 扩图弹窗
+const doImagePainting = async () => {
+  imageOutPaintingRef.value?.openModal()
+}
+// AI 扩图保存事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 </script>
 
 <style scoped>
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>
