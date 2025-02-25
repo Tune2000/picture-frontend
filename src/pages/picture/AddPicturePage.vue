@@ -4,7 +4,7 @@
       上传图片
     </h2>
     <a-typography-paragraph v-if="spaceId" type="secondary">
-      保存至私人空间：<a :href="`/space/detail/${spaceId}`" target="_self">{{ spaceName }}</a>
+      保存至{{ SPACE_TYPE_MAP[spaceType] }}：<a :href="`/space/detail/${spaceId}`" target="_self">{{ spaceName }}</a>
     </a-typography-paragraph>
     <a-typography-paragraph v-else type="secondary">
       上传至公共图库（需要管理员审核）
@@ -88,6 +88,7 @@ import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { EditOutlined, FullscreenOutlined  } from '@ant-design/icons-vue'
 import ImageCropper from '@/components/ImageCropper.vue'
 import ImageOutPainting from '@/components/ImageOutPainting.vue'
+import { SPACE_TYPE_MAP } from '@/constants/space'
 
 // 父组件通过子组件调用回调函数方式传递数据
 const picture = ref<API.PictureVO>()
@@ -103,7 +104,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 空间 id
-// 有空间 id 说明是上传至私人空间
+// 有空间 id 说明是上传至非公共图库
 const spaceId = computed(() => {
   return route.query?.spaceId
 })
@@ -161,18 +162,21 @@ const getTagCategoryOptions = async () => {
 
 // 获取空间名称
 const spaceName = ref<string>()
-const getSpaceName = async () => {
+// 获取空间类型
+const spaceType = ref()
+const getSpaceInfo = async () => {
   const res = await getSpaceVoByIdUsingGet({
     id: route.query?.spaceId as any
   })
   if (res.data.code === 0 && res.data.data) {
     spaceName.value = res.data.data.spaceName
+    spaceType.value = res.data.data.spaceType
   }
 }
 
 onMounted(() => {
   getTagCategoryOptions()
-  getSpaceName()
+  getSpaceInfo()
 })
 
 // 获取老数据
